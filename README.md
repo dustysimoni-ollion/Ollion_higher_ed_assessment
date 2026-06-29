@@ -14,6 +14,20 @@ A clean, premium, high-conversion self-service diagnostic tool for Higher Educat
   - Calibrated based on selected annual cloud budget tier (15% to 30% leakage range).
   - Shown if Cloud Economics pillar score is Level 1 or Level 2. If Level 3 is selected, shows "Optimized" (zero waste).
 
+## Data Flow Diagram
+
+```mermaid
+graph TD
+    User[1. User: Tech/Finance Leader] -->|Answers Diagnostic Qs| Wizard[2. Wizard Component]
+    Wizard -->|Calculates Score & Waste Tiers| CalcEngine[3. Logic Engine]
+    CalcEngine -->|Loads Lead Capture Form| FormGate[4. Form Gate]
+    User -->|Submits Contact Details| FormGate
+    FormGate -->|Background Fetch POST| HubSpot[5. HubSpot CRM Endpoint]
+    FormGate -->|Unlocks Results Dashboard| Results[6. Results Dashboard]
+    Results -->|Renders Calculated Savings & Maturity Tier| User
+    Results -->|Booking CTA Click| PeerReview[7. 15-Min Peer Review Scheduling]
+```
+
 ## CRM Integration Guide
 To connect the diagnostic form directly to your CRM/HubSpot endpoint:
 1. Locate the Portal ID and Form ID in your HubSpot account.
