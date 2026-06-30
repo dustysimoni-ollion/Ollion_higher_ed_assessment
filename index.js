@@ -159,7 +159,29 @@ document.addEventListener("DOMContentLoaded", () => {
   initWizard();
   setupNavigation();
   setupFormSubmission();
+  setupLogoErrorHandler();
 });
+
+function escapeHtml(str) {
+  if (typeof str !== 'string') return str;
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function setupLogoErrorHandler() {
+  const logoImg = document.getElementById("logo-img");
+  if (logoImg) {
+    logoImg.addEventListener("error", () => {
+      logoImg.style.display = "none";
+      const textNode = document.createTextNode("Ollion");
+      logoImg.parentNode.appendChild(textNode);
+    });
+  }
+}
 
 function initWizard() {
   const wizardContainer = document.getElementById("wizard-screens");
@@ -172,16 +194,16 @@ function initWizard() {
     screen.id = `screen-pillar-${pIdx}`;
     
     screen.innerHTML = `
-      <h2>${pillar.title}</h2>
-      <p class="screen-subtitle">${pillar.description}</p>
+      <h2>${escapeHtml(pillar.title)}</h2>
+      <p class="screen-subtitle">${escapeHtml(pillar.description)}</p>
       <div class="options-list">
         ${pillar.options.map(option => `
-          <label class="option-card" data-pillar="${pillar.id}" data-score="${option.score}">
-            <input type="radio" name="${pillar.id}" value="${option.score}">
+          <label class="option-card" data-pillar="${escapeHtml(pillar.id)}" data-score="${option.score}">
+            <input type="radio" name="${escapeHtml(pillar.id)}" value="${option.score}">
             <div class="custom-radio"></div>
             <div class="option-content">
-              <span class="option-label">${option.label}</span>
-              <span class="option-text">${option.text}</span>
+              <span class="option-label">${escapeHtml(option.label)}</span>
+              <span class="option-text">${escapeHtml(option.text)}</span>
             </div>
           </label>
         `).join("")}
@@ -195,15 +217,15 @@ function initWizard() {
   spendScreen.className = "wizard-screen";
   spendScreen.id = `screen-spend`;
   spendScreen.innerHTML = `
-    <h2>${ASSESSMENT_CONFIG.cloudSpend.title}</h2>
-    <p class="screen-subtitle">${ASSESSMENT_CONFIG.cloudSpend.description}</p>
+    <h2>${escapeHtml(ASSESSMENT_CONFIG.cloudSpend.title)}</h2>
+    <p class="screen-subtitle">${escapeHtml(ASSESSMENT_CONFIG.cloudSpend.description)}</p>
     <div class="options-list">
       ${ASSESSMENT_CONFIG.cloudSpend.options.map(option => `
-        <label class="option-card" data-spend-id="${option.id}">
-          <input type="radio" name="cloud_spend" value="${option.id}">
+        <label class="option-card" data-spend-id="${escapeHtml(option.id)}">
+          <input type="radio" name="cloud_spend" value="${escapeHtml(option.id)}">
           <div class="custom-radio"></div>
           <div class="option-content">
-            <span class="option-label">${option.text}</span>
+            <span class="option-label">${escapeHtml(option.text)}</span>
             <span class="option-text">Calibrate estimated infrastructure savings based on this tier.</span>
           </div>
         </label>
@@ -336,6 +358,21 @@ function setupFormSubmission() {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 
+    // 1. Honeypot Bot Validation (OWASP Anti-automation)
+    const honeypotVal = document.getElementById("hp-field").value;
+    if (honeypotVal) {
+      // Silent routing for spam bots
+      document.getElementById("diagnostic-app").style.display = "none";
+      renderResults();
+      return;
+    }
+
+    // 2. Consent Checkbox Validation
+    const consentChecked = document.getElementById("privacy-consent").checked;
+    if (!consentChecked) {
+      return;
+    }
+
     const submitBtn = form.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
     submitBtn.textContent = "Submitting Assessment...";
@@ -346,7 +383,7 @@ function setupFormSubmission() {
       email: document.getElementById("email").value,
       company: document.getElementById("institution").value,
       jobtitle: document.getElementById("job-title").value,
-      // Pass diagnostic values
+      privacy_consent: consentChecked,
       integration_score: userSelections["integration"],
       compliance_score: userSelections["compliance"],
       ai_readiness_score: userSelections["ai_readiness"],
@@ -355,15 +392,11 @@ function setupFormSubmission() {
     };
 
     // HubSpot Forms background POST configuration
-    // The sharing link provided: https://qetbq.share.hsforms.com/2x8O8mHzWS0qo7dMakNgcZg
-    // To implement background post, replace with the proper portal and form IDs:
     const PORTAL_ID = "YOUR_HUBSPOT_PORTAL_ID"; 
     const FORM_ID = "YOUR_HUBSPOT_FORM_ID";
     const hsEndpoint = `https://api.hsforms.com/submissions/v3/integration/submit/${PORTAL_ID}/${FORM_ID}`;
 
-    console.log("Submitting diagnostic lead data to CRM", formData);
-
-    // Make API request (Fallback gracefully on mock/local environments)
+    // Make API request (Fallback gracefully on mock/local environments without console logging PII)
     fetch(hsEndpoint, {
       method: "POST",
       headers: {
@@ -376,15 +409,16 @@ function setupFormSubmission() {
           { name: "email", value: formData.email },
           { name: "company", value: formData.company },
           { name: "jobtitle", value: formData.jobtitle },
+          { name: "privacy_consent", value: "true" },
           { name: "diagnostic_score", value: String(calculateTotalScore()) }
         ]
       })
     })
-    .catch(err => {
-      console.warn("HubSpot endpoint mock submission completed locally.", err);
+    .catch(() => {
+      // Silent error handler to protect client-side execution logs
     })
     .finally(() => {
-      // Transition to results dashboard regardless of endpoint configuration
+      // Transition to results dashboard
       document.getElementById("diagnostic-app").style.display = "none";
       renderResults();
     });

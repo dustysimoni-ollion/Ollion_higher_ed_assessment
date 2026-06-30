@@ -13,7 +13,7 @@
   <header>
     <div class="container nav-container">
       <a href="https://ollion.com" class="logo" id="header-logo">
-        <img src="../Ollion.png" alt="Ollion Logo" onerror="this.style.display='none'; this.after('Ollion');">
+        <img src="../Ollion.png" alt="Ollion Logo" id="logo-img">
       </a>
       <a href="#diagnostic-app" class="header-cta" id="nav-cta-btn">Start Diagnostic</a>
     </div>
@@ -92,6 +92,12 @@
         <p class="screen-subtitle">To view your customized efficiency tier, calculated financial cost leakage, and personalized 3-step action roadmap, please verify your details below.</p>
         
         <form id="lead-form">
+          <!-- Honeypot Bot Field (OWASP Anti-automation) -->
+          <div style="display: none;" aria-hidden="true">
+            <label for="hp-field">Ignore this field</label>
+            <input type="text" id="hp-field" name="hp_field" tabindex="-1" autocomplete="off">
+          </div>
+
           <div class="form-row">
             <div class="form-group">
               <label for="first-name">First Name</label>
@@ -125,6 +131,14 @@
             </div>
           </div>
           
+          <!-- Legal Consent Checkbox -->
+          <div class="form-group checkbox-group">
+            <input type="checkbox" id="privacy-consent" required>
+            <label for="privacy-consent" class="checkbox-label">
+              By submitting this form, you agree to allow Ollion to use the information provided as per Ollion's <a href="https://ollion.com/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
+            </label>
+          </div>
+
           <p class="form-privacy-note">We value your privacy. Your data will only be used to generate this assessment and coordinate your advisory review.</p>
           
           <button type="submit" class="btn-primary" style="width: 100%;">View My Dashboard & Recommendations</button>
@@ -198,7 +212,7 @@
       <div class="booking-section">
         <h3>Schedule Your 15-Minute Technical Peer Review</h3>
         <p>Bypass the sales pitch. Let’s sit down for a technical, peer-to-peer discussion to walk through your checklist results, locate areas of cloud leakage, and build a concrete optimization plan.</p>
-        <a href="https://qetbq.share.hsforms.com/2x8O8mHzWS0qo7dMakNgcZg" class="btn-primary" target="_blank" id="booking-cta-btn">Book My Peer Review Now</a>
+        <a href="https://qetbq.share.hsforms.com/2x8O8mHzWS0qo7dMakNgcZg" class="btn-primary" target="_blank" rel="noopener noreferrer" id="booking-cta-btn">Book My Peer Review Now</a>
       </div>
 
     </div>
@@ -226,8 +240,8 @@
     <div class="container footer-container">
       <p>&copy; 2026 Ollion. All rights reserved. Tech-agnostic data solutions for Higher Education.</p>
       <div class="footer-links">
-        <a href="https://ollion.com/privacy-policy" target="_blank">Privacy Policy</a>
-        <a href="https://ollion.com/terms-of-service" target="_blank">Terms of Service</a>
+        <a href="https://ollion.com/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+        <a href="https://ollion.com/terms-of-service" target="_blank" rel="noopener noreferrer">Terms of Service</a>
       </div>
     </div>
   </footer>
