@@ -52,3 +52,13 @@ Integrate these events inside `index.js` to track user progression and optimize 
 To maximize lead conversion:
 1. **Headline Test**: Compare the current outcome-oriented headline against a security-oriented headline (*"Is Shadow AI Exposing Your Campus Data? Take the FERPA Diagnostic"*).
 2. **Gating Test**: Compare Gating Option A (gate entire results dashboard) against showing a minimal maturity score (e.g., *"Your Score: 7/12 (Transitioning)"*) while gating the detailed cloud leakage calculations and custom 3-step action roadmap.
+
+## Security & Compliance Controls
+The application has been audited and hardened according to standard enterprise guidelines:
+*   **Privacy Consent**: Incorporates an explicit checkbox with privacy policy referencing. Consent state (`privacy_consent: "true"`) is logged and transmitted directly to the CRM database to maintain GDPR/FERPA audit integrity.
+*   **PII Sanitization (CWE-532)**: Removed all console logs containing form variables or error data to prevent PII exposure inside the client's browser console.
+*   **Anti-Spam / Anti-Automation (OWASP API4)**: A client-side honeypot field is embedded into the lead form. Spam bots completing this field will have their submissions silently dropped.
+*   **Reverse Tabnabbing Mitigation (CWE-1022)**: All links referencing target `_blank` include `rel="noopener noreferrer"`.
+*   **DOM-XSS Prevention (CWE-79)**: Dynamic template updates are handled using the internal `escapeHtml()` utility to prevent unescaped template injection.
+*   **Zero Third-Party Assets (CWE-494)**: External font references have been replaced with a native system font stack to prevent unauthorized origin requests.
+
