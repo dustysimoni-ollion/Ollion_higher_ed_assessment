@@ -392,38 +392,41 @@ function setupFormSubmission() {
     };
 
     // HubSpot Forms background POST configuration
-    const PORTAL_ID = "YOUR_HUBSPOT_PORTAL_ID"; 
-    const FORM_ID = "YOUR_HUBSPOT_FORM_ID";
+    const PORTAL_ID = "44361206"; 
+    const FORM_ID = "137d84ca-2474-48e9-bebc-8220c98fe94d";
     const hsEndpoint = `https://api.hsforms.com/submissions/v3/integration/submit/${PORTAL_ID}/${FORM_ID}`;
 
     // Make API request (Fallback gracefully on mock/local environments without console logging PII)
     fetch(hsEndpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        fields: [
-          { name: "firstname", value: formData.firstname },
-          { name: "lastname", value: formData.lastname },
-          { name: "email", value: formData.email },
-          { name: "company", value: formData.company },
-          { name: "jobtitle", value: formData.jobtitle },
-          { name: "privacy_consent", value: "true" },
-          { name: "diagnostic_score", value: String(calculateTotalScore()) }
-        ]
-      })
-    })
-    .catch(() => {
-      // Silent error handler to protect client-side execution logs
-    })
-    .finally(() => {
-      // Transition to results dashboard
-      document.getElementById("diagnostic-app").style.display = "none";
-      renderResults();
-    });
-  });
-}
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    fields: [
+      { name: "firstname", value: formData.firstname },
+      { name: "lastname", value: formData.lastname },
+      { name: "email", value: formData.email },
+      { name: "company", value: formData.company },
+      { name: "jobtitle", value: formData.jobtitle },
+      { name: "privacy_consent", value: "true" },
+      { name: "diagnostic_score", value: String(calculateTotalScore()) },
+      { name: "integration_score", value: String(formData.integration_score) },
+      { name: "compliance_score", value: String(formData.compliance_score) },
+      { name: "ai_readiness_score", value: String(formData.ai_readiness_score) },
+      { name: "finops_score", value: String(formData.finops_score) },
+      { name: "cloud_spend_tier", value: formData.cloud_spend_tier }
+    ]
+  })
+})
+.catch(() => {
+  // Silent error handler to protect client-side execution logs
+})
+.finally(() => {
+  // Transition to results dashboard
+  document.getElementById("diagnostic-app").style.display = "none";
+  renderResults();
+});
 
 function calculateTotalScore() {
   return (
